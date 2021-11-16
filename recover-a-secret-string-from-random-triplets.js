@@ -7,29 +7,29 @@
 // You can assume nothing about the triplets given to you other than that they are valid triplets and that they contain sufficient information to deduce the original string. In particular, this means that the secret string will never contain letters that do not occur in one of the triplets given to you.
 
 var recoverSecret = function (triplets) {
-  const newArr = [];
-  triplets.map((el, i) => {
-    return el.map((_el) => newArr.push(_el));
-  });
-  newArr;
-  let hash = {};
+  let letters = {};
 
-  for (const [i, num] of newArr.entries()) {
-    hash[num] = hash[num] + 1 || 1;
+  for (const trip of triplets) {
+    trip.map((el, i) => {
+      if (!letters[el]) {
+        letters[el] = trip.slice(i + 1);
+      } else {
+        letters[el] = letters[el].concat(trip.slice(i + 1));
+      }
+    });
   }
 
-  hash;
-  let arr = Object.keys(hash);
-
-  // (23242422)
-  arr;
+  return Object.entries(letters)
+    .sort((a, b) => {
+      return b[1]
+        .map((letter) => letter === a[0])
+        .some((check) => check === true)
+        ? 0
+        : -1;
+    })
+    .map((item) => item[0])
+    .join("");
 };
-
-// need to figure out how to check sort the values based on how they show up
-// t > u > p > s > u > i > s
-// w > h > i > h > s
-// a > t > s > p
-// h > i > a > p > s
 
 secret1 = "whatisup";
 triplets1 = [
@@ -41,13 +41,5 @@ triplets1 = [
   ["t", "i", "s"],
   ["w", "h", "s"],
 ];
-
-// t > u > p    t > u > p > w > h > i > s > a
-// w > h > i
-// t > s > u
-// a > t > s
-// h > a > p
-// t > i > s
-// w > h > s
 
 console.log(recoverSecret(triplets1), secret1);
